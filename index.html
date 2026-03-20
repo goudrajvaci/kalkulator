@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulátor Výpůjčky</title>
+    <style>
+        /* General Reset */
+        body {
+            font-family: "Poppins-Medium", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+
+@font-face {
+    font-family: "Poppins-Medium";   /* ← this is the name you will use later */
+    src: url("Poppins-Medium.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+        /* Centered Container */
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin: 5px 0 5px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+input, button {
+            width: 95%;
+            padding: 10px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #53C3EB;
+            color: black;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #result {
+            font-size: 1rem;
+            color: black;
+            margin-top: 15px;
+		padding: 10px;
+       
+        }
+
+        /* Responsive Typography */
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Define pricing logic
+        const pricing = {
+            D: {
+                hourly: { rate1: 119, rate2: 89, kmRate: 8.9 },
+                fixed: {
+   "XS": { price: 849, freeHours: 3, freeKm: 50 },
+    "S": { price: 599, freeHours: 6, freeKm: 0 },
+    "S+": { price: 1499, freeHours: 6, freeKm: 100 },
+    "M": { price: 2499, freeHours: 12, freeKm: 180 },
+    "M+": { price: 2990, freeHours: 12, freeKm: 300 },
+    "L": { price: 3590, freeHours: 24, freeKm: 300 },
+    "XL": { price: 3490, freeHours: 48, freeKm: 120 },
+    "XL+": { price: 3790, freeHours: 48, freeKm: 300 },
+    "XXL": { price: 3990, freeHours: 72, freeKm: 400 },
+    "Jaro 7 dní": { price: 12999, freeHours: 168, freeKm: 1200 },
+    "Jaro 10 dní": { price: 14999, freeHours: 240, freeKm: 1200 },
+    "Go 7 dní": { price: 11900, freeHours: 168, freeKm: 700 },
+    "Go 4,5 dne": { price: 5190, freeHours: 108, freeKm: 600 },
+    "Go 4 dny": { price: 4590, freeHours: 96, freeKm: 500 }
+}
+,
+            },
+            A: {
+                hourly: { rate1: 79, rate2: 49, kmRate: 7.9 },
+                fixed: {
+    "XS": { price: 449, freeHours: 3, freeKm: 50 },
+    "S": { price: 299, freeHours: 6, freeKm: 0 },
+    "S+": { price: 849, freeHours: 6, freeKm: 100 },
+    "M": { price: 1590, freeHours: 12, freeKm: 180 },
+    "M+": { price: 1990, freeHours: 12, freeKm: 300 },
+    "L": { price: 2390, freeHours: 24, freeKm: 300 },
+    "XL": { price: 2290, freeHours: 48, freeKm: 120 },
+    "XL+": { price: 2590, freeHours: 48, freeKm: 300 },
+    "XXL": { price: 2790, freeHours: 72, freeKm: 400 },
+    "Jaro 7 dní": { price: 9999, freeHours: 168, freeKm: 1200 },
+    "Jaro 10 dní": { price: 11999, freeHours: 240, freeKm: 1200 },
+    "Go 7 dní": { price: 7800, freeHours: 168, freeKm: 700 },
+    "Go 4,5 dne": { price: 4090, freeHours: 108, freeKm: 600 },
+    "Go 4 dny": { price: 3290, freeHours: 96, freeKm: 500 }
+}
+,
+            },
+            B: {
+                hourly: { rate1: 99, rate2: 69, kmRate: 7.9 },
+                fixed: {
+    "XS": { price: 549, freeHours: 3, freeKm: 50 },
+    "S": { price: 399, freeHours: 6, freeKm: 0 },
+    "S+": { price: 1049, freeHours: 6, freeKm: 100 },
+    "M": { price: 1990, freeHours: 12, freeKm: 180 },
+    "M+": { price: 2390, freeHours: 12, freeKm: 300 },
+    "L": { price: 2990, freeHours: 24, freeKm: 300 },
+    "XL": { price: 2890, freeHours: 48, freeKm: 120 },
+    "XL+": { price: 3190, freeHours: 48, freeKm: 300 },
+    "XXL": { price: 3390, freeHours: 72, freeKm: 400 },
+    "Jaro 7 dní": { price: 10999, freeHours: 168, freeKm: 1200 },
+    "Jaro 10 dní": { price: 12999, freeHours: 240, freeKm: 1200 },
+    "Go 7 dní": { price: 9900, freeHours: 168, freeKm: 700 },
+    "Go 4,5 dne": { price: 4390, freeHours: 108, freeKm: 600 },
+    "Go 4 dny": { price: 3890, freeHours: 96, freeKm: 500 }
+
+}
+,
+            },
+ 	C: {
+                hourly: { rate1: 109, rate2: 79, kmRate: 8.9 },
+                fixed: {
+    "XS": { price: 749, freeHours: 3, freeKm: 50 },
+    "S": { price: 499, freeHours: 6, freeKm: 0 },
+    "S+": { price: 1349, freeHours: 6, freeKm: 100 },
+    "M": { price: 2290, freeHours: 12, freeKm: 180 },
+    "M+": { price: 2690, freeHours: 12, freeKm: 300 },
+    "L": { price: 3290, freeHours: 24, freeKm: 300 },
+    "XL": { price: 3190, freeHours: 48, freeKm: 120 },
+    "XL+": { price: 3290, freeHours: 48, freeKm: 300 },
+    "XXL": { price: 3690, freeHours: 72, freeKm: 400 },
+    "Jaro 7 dní": { price: 11999, freeHours: 168, freeKm: 1200 },
+    "Jaro 10 dní": { price: 13999, freeHours: 240, freeKm: 1200 },
+    "Go 7 dní": { price: 10900, freeHours: 168, freeKm: 700 },
+    "Go 4,5 dne": { price: 4690, freeHours: 108, freeKm: 600 },
+    "Go 4 dny": { price: 4190, freeHours: 96, freeKm: 500 }
+}
+,
+            }
+
+        };
+
+       
+function calculateRentalPrice(carClass, kilometres, hours) {
+    if (!pricing[carClass] || hours < 1 || kilometres < 0) {
+        return "Invalid input.";
+    }
+
+    const { hourly, fixed } = pricing[carClass];
+
+    // Initialize variables to track the best offer
+    let bestPrice = Infinity; // Set a high initial price so we can find the minimum
+    let bestPackage = null;
+
+    // Step 1: Calculate cost for hourly rental based on hours and kilometers
+    let hourlyTotalPrice = hourly.rate1 * Math.min(hours, 3) // charge rate1 for first 3 hours
+                           + hourly.rate2 * Math.max(0, hours - 3) // charge rate2 for additional hours
+                           + hourly.kmRate * kilometres; // charge for kilometers
+
+    // Step 2: Compare hourly rental with fixed packages
+    bestPrice = hourlyTotalPrice;
+    bestPackage = "Hourly Rate";
+
+    // Step 3: Loop through all available fixed packages to find the best one
+    for (const pkg in fixed) {
+        if (fixed.hasOwnProperty(pkg)) {
+            const currentPackage = fixed[pkg];
+
+            // Calculate the base price of the package
+            let basePrice = currentPackage.price;
+
+            // Calculate additional hours (rate2) if applicable
+            let additionalHours = Math.max(0, hours - currentPackage.freeHours);
+            let additionalKm = Math.max(0, kilometres - currentPackage.freeKm);
+
+            // Calculate the total price for this package
+            let totalPrice = basePrice
+                + (additionalHours > 0 ? additionalHours * hourly.rate2 : 0) // charge for extra hours
+                + (additionalKm > 0 ? additionalKm * hourly.kmRate : 0); // charge for extra kilometers
+
+            // Compare and update the best price if this package is cheaper
+            if (totalPrice < bestPrice) {
+                bestPrice = totalPrice;
+                bestPackage = pkg; // Save the package name
+            }
+        }
+    }
+
+    // Return the best option
+   return {
+    type: bestPackage === "Hourly Rate" ? "Hourly" : bestPackage,
+    totalPrice: bestPrice
+};
+
+}
+
+        // Example usage:
+       document.getElementById("calculatePrice").addEventListener("click", () => {
+    const carClass = document.getElementById("carClass").value;
+    const kilometres = parseFloat(document.getElementById("kilometres").value);
+    const hours = parseFloat(document.getElementById("hours").value);
+
+    const result = calculateRentalPrice(carClass, kilometres, hours);
+
+    if (result) {
+        // Remove decimals by rounding the total price
+        const roundedPrice = Math.round(result.totalPrice);
+
+        document.getElementById("result").innerHTML =
+            result.type === "Hourly"
+                ? `Nejlepší volbou je v tomto případě <b>klasická výpůjčka</b> po hodinách a kilometrech. <p> Vyjde vás to na <b> ${roundedPrice} Kč</b>.`
+                : `Nejvýhodnější cenu získáte s <b>balíčkem ${result.type}</b>. <p>Celkově vás plánovaný čas a kilometry vyjdou na <b> ${roundedPrice} Kč</b>.`;
+    } else {
+        document.getElementById("result").textContent = "Nebyly nalezeny žádné platné nabídky.";
+    }
+});
+    });
+</script>
+
+<p> 
+
+<div class="container">
+
+<form>
+    <label for="carClass">Kategorie auta:</label>
+    <select id="carClass">
+        <option value="A">Fabia III/Rapid</option>
+        <option value="B">Fabia IV</option>
+	<option value="C">Scala/Kamiq</option>
+	<option value="D">Octavia</option>
+    </select>
+    <br />
+    <label for="hours">Délka výpůjčky (h):</label>
+    <input type="number" placeholder="Minimální délka výpůjčky je 1h" id="hours" required min="1" />
+    <br />
+    <label for="kilometres">Nájezd (km):</label>
+    <input type="number" placeholder="V ceně je vždy zahrnuto palivo" id="kilometres" required />
+    <br />
+    
+    <button type="button" id="calculatePrice">Spočítat cenu</button>
+</form>
+
+<p>
+
+<div id="result"></div> 
+
+</div>
+
+</body>
+
+</html>
